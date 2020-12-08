@@ -1,0 +1,92 @@
+[gd_resource type="AudioBusLayout" load_steps=7 format=2]
+
+[sub_resource type="AudioEffectReverb" id=1]
+resource_name = "Reverb"
+room_size = 0.18
+damping = 1.0
+dry = 0.45
+
+[sub_resource type="AudioEffectEQ" id=2]
+resource_name = "EQ"
+band_db/32_hz = -28.4
+band_db/100_hz = -18.5
+band_db/320_hz = -6.2
+band_db/1000_hz = -1.2
+band_db/3200_hz = -5.0
+band_db/10000_hz = -60.0
+
+[sub_resource type="AudioEffectReverb" id=3]
+resource_name = "Reverb"
+room_size = 0.08
+damping = 0.2
+dry = 0.86
+wet = 1.0
+
+[sub_resource type="AudioEffectEQ" id=4]
+resource_name = "EQ"
+band_db/32_hz = -60.0
+band_db/100_hz = -9.6
+band_db/3200_hz = -4.0
+band_db/10000_hz = -60.0
+
+[sub_resource type="AudioEffectReverb" id=5]
+resource_name = "Reverb"
+room_size = 0.09
+damping = 1.0
+spread = 0.2
+hipass = 0.25
+wet = 0.45
+
+[sub_resource type="AudioEffectLowPassFilter" id=6]
+resource_name = "LowPassFilter"
+cutoff_hz = 360.0
+
+[resource]
+bus/1/name = "EFFECTS"
+bus/1/solo = false
+bus/1/mute = false
+bus/1/bypass_fx = false
+bus/1/volume_db = 0.0
+bus/1/send = "Master"
+bus/2/name = "garage"
+bus/2/solo = false
+bus/2/mute = false
+bus/2/bypass_fx = false
+bus/2/volume_db = -0.00828743
+bus/2/send = "Master"
+bus/2/effect/0/effect = SubResource( 1 )
+bus/2/effect/0/enabled = true
+bus/3/name = "garage-closer"
+bus/3/solo = false
+bus/3/mute = false
+bus/3/bypass_fx = false
+bus/3/volume_db = -0.00828743
+bus/3/send = "EFFECTS"
+bus/3/effect/0/effect = SubResource( 2 )
+bus/3/effect/0/enabled = true
+bus/3/effect/1/effect = SubResource( 3 )
+bus/3/effect/1/enabled = true
+bus/4/name = "sm-inside"
+bus/4/solo = false
+bus/4/mute = false
+bus/4/bypass_fx = false
+bus/4/volume_db = 0.0
+bus/4/send = "EFFECTS"
+bus/4/effect/0/effect = SubResource( 4 )
+bus/4/effect/0/enabled = true
+bus/4/effect/1/effect = SubResource( 5 )
+bus/4/effect/1/enabled = true
+bus/5/name = "underwater"
+bus/5/solo = false
+bus/5/mute = false
+bus/5/bypass_fx = false
+bus/5/volume_db = 0.0139332
+bus/5/send = "EFFECTS"
+bus/5/effect/0/effect = SubResource( 6 )
+bus/5/effect/0/enabled = true
+bus/6/name = "MUSIC"
+bus/6/solo = false
+bus/6/mute = false
+bus/6/bypass_fx = false
+bus/6/volume_db = 0.0
+bus/6/send = "garage"

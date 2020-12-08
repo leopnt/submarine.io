@@ -1,0 +1,313 @@
+[gd_scene load_steps=17 format=2]
+
+[ext_resource path="res://pixelPlanets/Planets/LandMasses/LandMasses.tscn" type="PackedScene" id=1]
+[ext_resource path="res://pixelPlanets/GUI.gd" type="Script" id=2]
+[ext_resource path="res://pixelPlanets/Theme.tres" type="Theme" id=3]
+[ext_resource path="res://pixelPlanets/stars.png" type="Texture" id=4]
+[ext_resource path="res://postprocess-effects/CRTeffect_layer.tscn" type="PackedScene" id=5]
+[ext_resource path="res://fonts/PressStart2P-Regular.ttf" type="DynamicFontData" id=6]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+render_mode blend_mix;
+
+uniform vec2 offset = vec2(0.0);
+
+
+float rand(vec2 coord) {
+	return fract(sin(dot(coord.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+vec2 rotate(vec2 coord, float angle){
+	coord -= 0.5;
+	coord *= mat2(vec2(cos(angle),-sin(angle)),vec2(sin(angle),cos(angle)));
+	return coord + 0.5;
+}
+
+void fragment() {
+	vec2 uv = rotate(UV, TIME * 0.2);
+
+	vec4 col = vec4(1.0) + rand(UV + vec2(TIME*0.0000001,0.0)) * 0.03;
+	
+	col = col* vec4(
+		abs(sin(uv.x * cos(offset.x)+ TIME * 0.105)),
+		abs(sin((cos(uv.x + uv.y) + cos(offset.x + offset.y) + TIME * 0.059))) ,
+		abs(cos(uv.y * sin(offset.y) + TIME * 0.0253)) ,
+		1.0);
+
+	COLOR = col;
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+shader_param/offset = Vector2( 0, 0 )
+
+[sub_resource type="CanvasItemMaterial" id=3]
+particles_animation = true
+particles_anim_h_frames = 11
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Gradient" id=4]
+offsets = PoolRealArray( 0, 0.0518519, 0.881481, 1 )
+colors = PoolColorArray( 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 )
+
+[sub_resource type="GradientTexture" id=5]
+gradient = SubResource( 4 )
+
+[sub_resource type="ParticlesMaterial" id=6]
+emission_shape = 2
+emission_box_extents = Vector3( 256, 150, 1 )
+flag_disable_z = true
+gravity = Vector3( 0, 0, 0 )
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+color_ramp = SubResource( 5 )
+hue_variation = 0.05
+hue_variation_random = 1.0
+anim_offset = 1.0
+anim_offset_random = 1.0
+
+[sub_resource type="StyleBoxEmpty" id=7]
+
+[sub_resource type="DynamicFont" id=8]
+size = 32
+font_data = ExtResource( 6 )
+
+[sub_resource type="Shader" id=9]
+code = "shader_type canvas_item;
+render_mode unshaded;
+
+uniform float abberation: hint_range(-0.1, 0.1);
+
+
+void fragment () {
+	vec4 color = vec4(1.0);
+
+
+
+
+	color.r = texture(SCREEN_TEXTURE, SCREEN_UV - vec2(abberation,0.0)).r;
+	color.g = texture(SCREEN_TEXTURE, SCREEN_UV).g;
+	color.b = texture(SCREEN_TEXTURE, SCREEN_UV + vec2(abberation,0.0)).b;
+	COLOR = color;
+}"
+
+[sub_resource type="ShaderMaterial" id=10]
+shader = SubResource( 9 )
+shader_param/abberation = 0.001
+
+[node name="GUI" type="Control"]
+modulate = Color( 0, 1, 0, 0.956863 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_vertical = 5
+theme = ExtResource( 3 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Light" type="ColorRect" parent="."]
+material = SubResource( 2 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Dark" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 0.878431 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Particles2D" type="Particles2D" parent="."]
+visible = false
+modulate = Color( 1, 1, 1, 0.513726 )
+material = SubResource( 3 )
+position = Vector2( 256, 150 )
+amount = 50
+lifetime = 50.0
+preprocess = 50.0
+process_material = SubResource( 6 )
+texture = ExtResource( 4 )
+
+[node name="Control" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+size_flags_vertical = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlanetHolder" type="CenterContainer" parent="HBoxContainer"]
+visible = false
+margin_right = 508.0
+margin_bottom = 600.0
+rect_min_size = Vector2( 300, 300 )
+rect_pivot_offset = Vector2( 150, 150 )
+mouse_filter = 2
+size_flags_horizontal = 3
+
+[node name="Control" parent="HBoxContainer/PlanetHolder" instance=ExtResource( 1 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 154.0
+margin_top = 200.0
+margin_right = 354.0
+margin_bottom = 400.0
+mouse_filter = 2
+
+[node name="Settings" type="Control" parent="HBoxContainer"]
+margin_right = 1024.0
+margin_bottom = 600.0
+mouse_filter = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer/Settings"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -437.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Control2" type="Control" parent="HBoxContainer/Settings/VBoxContainer2"]
+margin_right = 437.0
+margin_bottom = 600.0
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Settings/VBoxContainer2/Control2"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 40.0
+margin_top = 40.0
+margin_right = -40.0
+margin_bottom = -40.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 2
+custom_constants/separation = 5
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="play" type="Button" parent="HBoxContainer/Settings/VBoxContainer2/Control2/VBoxContainer"]
+margin_right = 357.0
+margin_bottom = 82.0
+focus_neighbour_bottom = NodePath("../garage")
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "PLAY"
+
+[node name="multiplayer" type="Button" parent="HBoxContainer/Settings/VBoxContainer2/Control2/VBoxContainer"]
+margin_top = 87.0
+margin_right = 357.0
+margin_bottom = 170.0
+focus_neighbour_bottom = NodePath("../settings")
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+disabled = true
+text = "MULTIPLAYER"
+
+[node name="garage" type="Button" parent="HBoxContainer/Settings/VBoxContainer2/Control2/VBoxContainer"]
+margin_top = 175.0
+margin_right = 357.0
+margin_bottom = 257.0
+focus_neighbour_top = NodePath("../play")
+focus_neighbour_bottom = NodePath("../settings")
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "GARAGE"
+
+[node name="settings" type="Button" parent="HBoxContainer/Settings/VBoxContainer2/Control2/VBoxContainer"]
+margin_top = 262.0
+margin_right = 357.0
+margin_bottom = 345.0
+focus_neighbour_top = NodePath("../garage")
+focus_neighbour_bottom = NodePath("../credits")
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "SETTINGS"
+
+[node name="credits" type="Button" parent="HBoxContainer/Settings/VBoxContainer2/Control2/VBoxContainer"]
+margin_top = 350.0
+margin_right = 357.0
+margin_bottom = 432.0
+focus_neighbour_top = NodePath("../settings")
+focus_neighbour_bottom = NodePath("../exit-game")
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "CREDITS"
+
+[node name="exit-game" type="Button" parent="HBoxContainer/Settings/VBoxContainer2/Control2/VBoxContainer"]
+margin_top = 437.0
+margin_right = 357.0
+margin_bottom = 520.0
+focus_neighbour_top = NodePath("../credits")
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "EXIT"
+
+[node name="Control2" type="Control" parent="."]
+anchor_bottom = 1.0
+margin_right = 594.0
+mouse_filter = 2
+size_flags_vertical = 7
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control2"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -249.5
+margin_top = 40.0
+margin_right = 249.5
+margin_bottom = 114.0
+size_flags_horizontal = 4
+custom_styles/normal = SubResource( 7 )
+custom_fonts/font = SubResource( 8 )
+text = "SUBMARINE.IO"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Abberation" type="ColorRect" parent="."]
+material = SubResource( 10 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CRTeffect_layer" parent="." instance=ExtResource( 5 )]
+[connection signal="gui_input" from="Control" to="." method="_on_Control_gui_input"]
+[connection signal="pressed" from="HBoxContainer/Settings/VBoxContainer2/Control2/VBoxContainer/play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="HBoxContainer/Settings/VBoxContainer2/Control2/VBoxContainer/garage" to="." method="_on_garage_pressed"]
+[connection signal="pressed" from="HBoxContainer/Settings/VBoxContainer2/Control2/VBoxContainer/settings" to="." method="_on_settings_pressed"]
+[connection signal="pressed" from="HBoxContainer/Settings/VBoxContainer2/Control2/VBoxContainer/credits" to="." method="_on_credits_pressed"]
+[connection signal="pressed" from="HBoxContainer/Settings/VBoxContainer2/Control2/VBoxContainer/exit-game" to="." method="_on_exitgame_pressed"]

@@ -1,0 +1,455 @@
+[gd_scene load_steps=8 format=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends \"res://pixelPlanets/Planets/Planet.gd\"
+
+func set_pixels(amount):	
+	$Water.material.set_shader_param(\"pixels\", amount)
+	$Land.material.set_shader_param(\"pixels\", amount)
+	$Cloud.material.set_shader_param(\"pixels\", amount)
+
+func set_light(pos):
+	$Cloud.material.set_shader_param(\"light_origin\", pos)
+	$Water.material.set_shader_param(\"light_origin\", pos)
+	$Land.material.set_shader_param(\"light_origin\", pos)
+
+func set_seed(sd):
+	var converted_seed = sd%1000/100.0
+	$Cloud.material.set_shader_param(\"seed\", converted_seed)
+	$Water.material.set_shader_param(\"seed\", converted_seed)
+	$Land.material.set_shader_param(\"seed\", converted_seed)
+	$Cloud.material.set_shader_param(\"cloud_cover\", rand_range(0.35, 0.6))
+"
+
+[sub_resource type="Shader" id=2]
+code = "shader_type canvas_item;
+render_mode blend_mix;
+
+uniform float pixels : hint_range(10,100);
+uniform vec2 light_origin = vec2(0.39, 0.39);
+uniform float time_speed : hint_range(0.0, 1.0) = 0.2;
+uniform float dither_size : hint_range(0.0, 10.0) = 2.0;
+uniform float light_border_1 : hint_range(0.0, 1.0) = 0.4;
+uniform float light_border_2 : hint_range(0.0, 1.0) = 0.6;
+uniform vec4 color1 : hint_color;
+uniform vec4 color2 : hint_color;
+uniform vec4 color3 : hint_color;
+uniform float size = 50.0;
+uniform int OCTAVES : hint_range(0, 20, 1);
+uniform float seed: hint_range(1, 10);
+
+float rand(vec2 coord) {
+	// land has to be tiled
+	// tiling only works for integer values, thus the rounding
+	// it would probably be better to only allow integer sizes
+	// multiply by vec2(2,1) to simulate planet having another side
+	coord = mod(coord, vec2(2.0,1.0)*round(size));
+	return fract(sin(dot(coord.xy ,vec2(12.9898,78.233))) * 43758.5453 * seed);
+}
+
+float noise(vec2 coord){
+	vec2 i = floor(coord);
+	vec2 f = fract(coord);
+	
+	float a = rand(i);
+	float b = rand(i + vec2(1.0, 0.0));
+	float c = rand(i + vec2(0.0, 1.0));
+	float d = rand(i + vec2(1.0, 1.0));
+
+	vec2 cubic = f * f * (3.0 - 2.0 * f);
+
+	return mix(a, b, cubic.x) + (c - a) * cubic.y * (1.0 - cubic.x) + (d - b) * cubic.x * cubic.y;
+}
+
+float fbm(vec2 coord){
+	float value = 0.0;
+	float scale = 0.5;
+
+	for(int i = 0; i < OCTAVES ; i++){
+		value += noise(coord) * scale;
+		coord *= 2.0;
+		scale *= 0.5;
+	}
+	return value;
+}
+
+bool dither(vec2 uv1, vec2 uv2) {
+	return mod(uv1.x+uv2.y,2.0/pixels) <= 1.0 / pixels;
+}
+
+void fragment() {
+	//pixelize uv
+	vec2 uv = floor(UV*pixels)/pixels;
+	// check distance from center & distance to light
+	float d_circle = distance(uv, vec2(0.5));
+	float d_light = distance(uv , vec2(light_origin));
+	
+	// cut out a circle
+	float a = step(d_circle, 0.5);
+	
+	// get a noise value with light distance added
+	d_light += fbm(uv*size+vec2(TIME*time_speed, 0.0))*0.3; // change the magic 0.3 here for different light strengths
+	
+	// size of edge in which colors should be dithered
+	float dither_border = (1.0/pixels)*dither_size;
+
+	// now we can assign colors based on distance to light origin
+	vec3 col = color1.rgb;
+	if (d_light > light_border_1) {
+		col = color2.rgb;
+		if (d_light < light_border_1 + dither_border && dither(uv, UV)) {
+			col = color1.rgb;
+		}
+	}
+	if (d_light > light_border_2) {
+		col = color3.rgb;
+		if (d_light < light_border_2 + dither_border && dither(uv, UV)) {
+			col = color2.rgb;
+		}
+	}
+	
+	COLOR = vec4(col, a);
+}
+"
+
+[sub_resource type="ShaderMaterial" id=3]
+shader = SubResource( 2 )
+shader_param/pixels = 100.0
+shader_param/light_origin = Vector2( 0.39, 0.39 )
+shader_param/time_speed = 0.1
+shader_param/dither_size = 2.0
+shader_param/light_border_1 = 0.4
+shader_param/light_border_2 = 0.6
+shader_param/color1 = Color( 0.572549, 0.909804, 0.752941, 1 )
+shader_param/color2 = Color( 0.309804, 0.643137, 0.721569, 1 )
+shader_param/color3 = Color( 0.172549, 0.207843, 0.301961, 1 )
+shader_param/size = 5.228
+shader_param/OCTAVES = 3
+shader_param/seed = 10.0
+
+[sub_resource type="Shader" id=4]
+code = "shader_type canvas_item;
+render_mode blend_mix;
+
+uniform float pixels : hint_range(10,100);
+uniform vec2 light_origin = vec2(0.39, 0.39);
+uniform float time_speed : hint_range(0.0, 1.0) = 0.2;
+uniform float dither_size : hint_range(0.0, 10.0) = 2.0;
+uniform float light_border_1 : hint_range(0.0, 1.0) = 0.4;
+uniform float light_border_2 : hint_range(0.0, 1.0) = 0.5;
+uniform float land_cutoff : hint_range(0.0, 1.0);
+
+uniform vec4 col1 : hint_color;
+uniform vec4 col2 : hint_color;
+uniform vec4 col3 : hint_color;
+uniform vec4 col4 : hint_color;
+
+uniform float size = 50.0;
+uniform int OCTAVES : hint_range(0, 20, 1);
+uniform float seed: hint_range(1, 10);
+
+
+
+float rand(vec2 coord) {
+	// land has to be tiled (or the contintents on this planet have to be changing very fast)
+	// tiling only works for integer values, thus the rounding
+	// it would probably be better to only allow integer sizes
+	// multiply by vec2(2,1) to simulate planet having another side
+	coord = mod(coord, vec2(2.0,1.0)*round(size));
+	return fract(sin(dot(coord.xy ,vec2(12.9898,78.233))) * 43758.5453 * seed);
+}
+
+
+float noise(vec2 coord){
+	vec2 i = floor(coord);
+	vec2 f = fract(coord);
+		
+	float a = rand(i);
+	float b = rand(i + vec2(1.0, 0.0));
+	float c = rand(i + vec2(0.0, 1.0));
+	float d = rand(i + vec2(1.0, 1.0));
+
+	vec2 cubic = f * f * (3.0 - 2.0 * f);
+
+	return mix(a, b, cubic.x) + (c - a) * cubic.y * (1.0 - cubic.x) + (d - b) * cubic.x * cubic.y;
+}
+
+float fbm(vec2 coord){
+	float value = 0.0;
+	float scale = 0.5;
+
+	for(int i = 0; i < OCTAVES ; i++){
+		value += noise(coord) * scale;
+		coord *= 2.0;
+		scale *= 0.5;
+	}
+	return value;
+}
+
+vec2 spherify(vec2 uv) {
+	vec2 centered= uv *2.0-1.0;
+	float z = sqrt(1.0 - dot(centered.xy, centered.xy));
+	vec2 sphere = centered/(z + 1.0);
+	return sphere * 0.5+0.5;
+}
+
+vec2 rotate(vec2 coord, float angle){
+	coord -= 0.5;
+	coord *= mat2(vec2(cos(angle),-sin(angle)),vec2(sin(angle),cos(angle)));
+	return coord + 0.5;
+}
+
+void fragment() {
+	// pixelize uv
+	vec2 uv = floor(UV*pixels)/pixels;
+	
+	float d_light = distance(uv , light_origin);
+	
+	// give planet a tilt
+	uv = rotate(uv, 0.2);
+	
+	// map to sphere
+	uv = spherify(uv);
+	
+	// some scrolling noise for landmasses
+	vec2 base_fbm_uv = (uv)*size+vec2(TIME*time_speed,0.0);
+	
+	// use multiple fbm's at different places so we can determine what color land gets
+	float fbm1 = fbm(base_fbm_uv);
+	float fbm2 = fbm(base_fbm_uv - light_origin*fbm1);
+	float fbm3 = fbm(base_fbm_uv - light_origin*1.5*fbm1);
+	float fbm4 = fbm(base_fbm_uv - light_origin*2.0*fbm1);
+	
+	// lots of magic numbers here
+	// you can mess with them, it changes the color distribution
+	if (d_light < light_border_1) {
+		fbm4 *= 0.9;
+	}
+	if (d_light > light_border_1) {
+		fbm2 *= 1.05;
+		fbm3 *= 1.05;
+		fbm4 *= 1.05;
+	} 
+	if (d_light > light_border_2) {
+		fbm2 *= 1.3;
+		fbm3 *= 1.4;
+		fbm4 *= 1.8;
+	} 
+	
+	// increase contrast on d_light
+	d_light = pow(d_light, 2.0)*0.1;
+	vec3 col = col4.rgb;
+	// assign colors based on if there is noise to the top-left of noise
+	// and also based on how far noise is from light
+	if (fbm4 + d_light < fbm1) {
+		col = col3.rgb;
+	}
+	if (fbm3 + d_light < fbm1) {
+		col = col2.rgb;
+	}
+	if (fbm2 + d_light < fbm1) {
+		col = col1.rgb;
+	}
+	
+	COLOR = vec4(col, step(land_cutoff, fbm1));
+}
+"
+
+[sub_resource type="ShaderMaterial" id=5]
+shader = SubResource( 4 )
+shader_param/pixels = 100.0
+shader_param/light_origin = Vector2( 0.39, 0.39 )
+shader_param/time_speed = 0.2
+shader_param/dither_size = 2.0
+shader_param/light_border_1 = 0.32
+shader_param/light_border_2 = 0.534
+shader_param/land_cutoff = 0.633
+shader_param/col1 = Color( 0.784314, 0.831373, 0.364706, 1 )
+shader_param/col2 = Color( 0.388235, 0.670588, 0.247059, 1 )
+shader_param/col3 = Color( 0.184314, 0.341176, 0.32549, 1 )
+shader_param/col4 = Color( 0.156863, 0.207843, 0.25098, 1 )
+shader_param/size = 4.292
+shader_param/OCTAVES = 6
+shader_param/seed = 7.947
+
+[sub_resource type="Shader" id=6]
+code = "shader_type canvas_item;
+render_mode blend_mix;
+
+uniform float pixels : hint_range(10,100);
+uniform float cloud_cover : hint_range(0.0, 1.0);
+uniform vec2 light_origin = vec2(0.39, 0.39);
+uniform float time_speed : hint_range(-1.0, 1.0) = 0.2;
+uniform float stretch : hint_range(1.0,3.0) = 2.0;
+uniform float cloud_curve : hint_range(1.0, 2.0) = 1.3;
+uniform float light_border_1 : hint_range(0.0, 1.0) = 0.52;
+uniform float light_border_2 : hint_range(0.0, 1.0) = 0.62;
+
+uniform vec4 base_color : hint_color;
+uniform vec4 outline_color : hint_color;
+uniform vec4 shadow_base_color : hint_color;
+uniform vec4 shadow_outline_color : hint_color;
+
+uniform float size = 50.0;
+uniform int OCTAVES : hint_range(0, 20, 1);
+uniform float seed: hint_range(1, 10);
+
+float rand(vec2 coord) {
+	return fract(sin(dot(coord.xy ,vec2(12.9898,78.233))) * 43758.5453 * seed);
+}
+
+float noise(vec2 coord){
+	vec2 i = floor(coord);
+	vec2 f = fract(coord);
+	
+	float a = rand(i);
+	float b = rand(i + vec2(1.0, 0.0));
+	float c = rand(i + vec2(0.0, 1.0));
+	float d = rand(i + vec2(1.0, 1.0));
+
+	vec2 cubic = f * f * (3.0 - 2.0 * f);
+
+	return mix(a, b, cubic.x) + (c - a) * cubic.y * (1.0 - cubic.x) + (d - b) * cubic.x * cubic.y;
+}
+
+float fbm(vec2 coord){
+	float value = 0.0;
+	float scale = 0.5;
+
+	for(int i = 0; i < OCTAVES ; i++){
+		value += noise(coord) * scale;
+		coord *= 2.0;
+		scale *= 0.5;
+	}
+	return value;
+}
+
+vec2 hash( float n ) {
+    float sn = sin(n);
+    return fract(vec2(sn,sn*42125.13)*seed);
+}
+// by Leukbaars from https://www.shadertoy.com/view/4tK3zR
+float circleNoise(vec2 uv) {
+    float uv_y = floor(uv.y);
+    uv.x += uv_y*.31;
+    vec2 f = fract(uv);
+    vec2 h = hash(floor(uv.x)*uv_y);
+    float m = (length(f-0.25-(h.x*0.5)));
+    float r = h.y*0.25;
+    return smoothstep(0.0, r, m*0.75);
+}
+
+float cloud_alpha(vec2 uv, float time) {
+	float c_noise = 0.0;
+	
+	
+	// more iterations for more turbulence
+	for (int i = 0; i < 9; i++) {
+		c_noise += circleNoise((uv * size *0.3) + (float(i+1)*10.) + (vec2(time*0.1, 0.0)));
+	}
+	float fbm = fbm(uv*size+c_noise + vec2(time*0.5, 0.0));
+	
+	return fbm;//step(a_cutoff, fbm);
+}
+
+bool dither(vec2 uv_pixel, vec2 uv_real) {
+	return mod(uv_pixel.x+uv_real.y,2.0/pixels) <= 1.0 / pixels;
+}
+
+vec2 spherify(vec2 uv) {
+	vec2 centered= uv *2.0-1.0;
+	float z = sqrt(1.0 - dot(centered.xy, centered.xy));
+	vec2 sphere = centered/(z + 1.0);
+	return sphere * 0.5+0.5;
+}
+
+void fragment() {
+	// pixelize uv
+	vec2 uv = floor(UV*pixels)/pixels;
+	
+	// distance to light source
+	float d_light = distance(uv , light_origin);
+	
+	// map to sphere
+	uv = spherify(uv);
+	// slightly make uv go down on the right, and up in the left
+	uv.y += smoothstep(0.0, cloud_curve, abs(uv.x-0.4));
+	
+	
+	float c = cloud_alpha(uv*vec2(1.0, stretch), TIME*time_speed);
+	
+	// assign some colors based on cloud depth & distance from light
+	vec3 col = base_color.rgb;
+	if (c < cloud_cover + 0.03) {
+		col = outline_color.rgb;
+	}
+	if (d_light + c*0.2 > light_border_1) {
+		col = shadow_base_color.rgb;
+
+	}
+	if (d_light + c*0.2 > light_border_2) {
+		col = shadow_outline_color.rgb;
+	}
+	
+
+	
+	COLOR = vec4(col, step(cloud_cover, c));
+}
+"
+
+[sub_resource type="ShaderMaterial" id=7]
+shader = SubResource( 6 )
+shader_param/pixels = 100.0
+shader_param/cloud_cover = 0.415
+shader_param/light_origin = Vector2( 0.39, 0.39 )
+shader_param/time_speed = 0.47
+shader_param/stretch = 2.0
+shader_param/cloud_curve = 1.3
+shader_param/light_border_1 = 0.52
+shader_param/light_border_2 = 0.62
+shader_param/base_color = Color( 0.87451, 0.878431, 0.909804, 1 )
+shader_param/outline_color = Color( 0.639216, 0.654902, 0.760784, 1 )
+shader_param/shadow_base_color = Color( 0.407843, 0.435294, 0.6, 1 )
+shader_param/shadow_outline_color = Color( 0.25098, 0.286275, 0.45098, 1 )
+shader_param/size = 7.745
+shader_param/OCTAVES = 2
+shader_param/seed = 5.939
+
+[node name="Control" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -212.0
+rect_min_size = Vector2( 200, 200 )
+rect_pivot_offset = Vector2( 100, 100 )
+script = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Water" type="ColorRect" parent="."]
+material = SubResource( 3 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 3.05176e-05
+margin_bottom = 3.05176e-05
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Land" type="ColorRect" parent="."]
+material = SubResource( 5 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 3.05176e-05
+margin_bottom = 3.05176e-05
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Cloud" type="ColorRect" parent="."]
+material = SubResource( 7 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}

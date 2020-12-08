@@ -1,0 +1,75 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://shaders/CRT_texture.gd" type="Script" id=1]
+[ext_resource path="res://shaders/CRTshader.shader" type="Shader" id=2]
+[ext_resource path="res://shaders/white.png" type="Texture" id=3]
+[ext_resource path="res://shaders/CRTFrame.png" type="Texture" id=4]
+
+[sub_resource type="Shader" id=1]
+code = "// this is a \"backup\" shader used when CRT_texture is not visible
+// it is overrided by crt_shader when CRT_texture is enable
+
+shader_type canvas_item;
+ 
+void fragment()
+{
+	vec4 world_pixel = texture(SCREEN_TEXTURE, SCREEN_UV);
+	COLOR = vec4(0.0, world_pixel.y, 0.0, 1.0); //keep only green pixel
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+
+[sub_resource type="ShaderMaterial" id=3]
+shader = ExtResource( 2 )
+shader_param/screen_width = 1024.0
+shader_param/screen_height = 600.0
+shader_param/BarrelPower = 1.03
+shader_param/color_bleeding = 1.2
+shader_param/bleeding_range_x = 1.1
+shader_param/bleeding_range_y = 1.1
+shader_param/lines_distance = 160.0
+shader_param/scan_size = 6.0
+shader_param/scanline_alpha = 0.9
+shader_param/lines_velocity = 30.0
+
+[node name="CRTeffect_layer" type="CanvasLayer"]
+layer = 2
+
+[node name="GameColorMask" type="TextureRect" parent="."]
+modulate = Color( 0, 1, 0, 1 )
+material = SubResource( 2 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource( 3 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CRT_texture" type="TextureRect" parent="."]
+modulate = Color( 0, 1, 0, 1 )
+material = SubResource( 3 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource( 3 )
+expand = true
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CRT_mask" type="TextureRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource( 4 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="item_rect_changed" from="CRT_texture" to="CRT_texture" method="_on_CRT_texture_item_rect_changed"]

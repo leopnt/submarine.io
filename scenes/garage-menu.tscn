@@ -1,0 +1,253 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://scripts/garage-menu.gd" type="Script" id=1]
+[ext_resource path="res://postprocess-effects/CRTeffect_layer.tscn" type="PackedScene" id=2]
+[ext_resource path="res://pixelPlanets/Theme.tres" type="Theme" id=3]
+[ext_resource path="res://scripts/garage_ButtonSmType.gd" type="Script" id=4]
+[ext_resource path="res://scripts/garage-menu-texture.gd" type="Script" id=5]
+
+[sub_resource type="OpenSimplexNoise" id=1]
+
+[sub_resource type="NoiseTexture" id=2]
+width = 64
+height = 64
+noise = SubResource( 1 )
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 1, 1, 1, 0.27451 )
+
+[sub_resource type="StyleBoxFlat" id=4]
+bg_color = Color( 0, 0, 0, 0.470588 )
+
+[sub_resource type="StyleBoxEmpty" id=5]
+
+[sub_resource type="StyleBoxFlat" id=6]
+bg_color = Color( 1, 1, 1, 0.27451 )
+
+[sub_resource type="StyleBoxFlat" id=7]
+bg_color = Color( 1, 1, 1, 0.27451 )
+
+[node name="garage-menu" type="Control"]
+modulate = Color( 0, 1, 0, 1 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 40.0
+margin_top = 40.0
+margin_right = -40.0
+margin_bottom = -40.0
+theme = ExtResource( 3 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+margin_bottom = 139.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+margin_top = 24.0
+margin_right = 944.0
+margin_bottom = 40.0
+size_flags_vertical = 6
+text = "GARAGE"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label2" type="Label" parent="VBoxContainer"]
+margin_top = 98.0
+margin_right = 944.0
+margin_bottom = 114.0
+size_flags_vertical = 6
+text = "Score"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -319.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer"]
+margin_right = 944.0
+margin_bottom = 319.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/separation = 40
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel_std" type="Panel" parent="ScrollContainer/HBoxContainer" groups=[
+"garagePanel",
+]]
+margin_right = 288.0
+margin_bottom = 319.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer/HBoxContainer/Panel_std"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 10.0
+margin_top = 40.0
+margin_right = -10.0
+margin_bottom = -10.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="ScrollContainer/HBoxContainer/Panel_std/VBoxContainer"]
+margin_left = 102.0
+margin_right = 166.0
+margin_bottom = 64.0
+size_flags_horizontal = 6
+size_flags_vertical = 0
+texture = SubResource( 2 )
+script = ExtResource( 5 )
+
+[node name="Label" type="Label" parent="ScrollContainer/HBoxContainer/Panel_std/VBoxContainer"]
+margin_top = 162.0
+margin_right = 268.0
+margin_bottom = 178.0
+size_flags_horizontal = 7
+size_flags_vertical = 6
+text = "STD"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="Button" type="Button" parent="ScrollContainer/HBoxContainer/Panel_std"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_styles/hover = SubResource( 3 )
+custom_styles/disabled = SubResource( 4 )
+custom_styles/normal = SubResource( 5 )
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel_fst" type="Panel" parent="ScrollContainer/HBoxContainer" groups=[
+"garagePanel",
+]]
+margin_left = 328.0
+margin_right = 616.0
+margin_bottom = 319.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer/HBoxContainer/Panel_fst"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 10.0
+margin_top = 40.0
+margin_right = -10.0
+margin_bottom = -10.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="ScrollContainer/HBoxContainer/Panel_fst/VBoxContainer"]
+margin_left = 102.0
+margin_right = 166.0
+margin_bottom = 64.0
+size_flags_horizontal = 6
+size_flags_vertical = 0
+texture = SubResource( 2 )
+script = ExtResource( 5 )
+smType = 1
+
+[node name="Label" type="Label" parent="ScrollContainer/HBoxContainer/Panel_fst/VBoxContainer"]
+margin_top = 162.0
+margin_right = 268.0
+margin_bottom = 178.0
+size_flags_horizontal = 7
+size_flags_vertical = 6
+text = "STD"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="Button" type="Button" parent="ScrollContainer/HBoxContainer/Panel_fst"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_styles/hover = SubResource( 6 )
+custom_styles/disabled = SubResource( 4 )
+custom_styles/normal = SubResource( 5 )
+disabled = true
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+smType = 1
+
+[node name="Panel_slw" type="Panel" parent="ScrollContainer/HBoxContainer" groups=[
+"garagePanel",
+]]
+margin_left = 656.0
+margin_right = 944.0
+margin_bottom = 319.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer/HBoxContainer/Panel_slw"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 10.0
+margin_top = 40.0
+margin_right = -10.0
+margin_bottom = -10.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="ScrollContainer/HBoxContainer/Panel_slw/VBoxContainer"]
+margin_left = 102.0
+margin_right = 166.0
+margin_bottom = 64.0
+size_flags_horizontal = 6
+size_flags_vertical = 0
+texture = SubResource( 2 )
+script = ExtResource( 5 )
+smType = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/HBoxContainer/Panel_slw/VBoxContainer"]
+margin_top = 162.0
+margin_right = 268.0
+margin_bottom = 178.0
+size_flags_horizontal = 7
+size_flags_vertical = 6
+text = "STD"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="Button" type="Button" parent="ScrollContainer/HBoxContainer/Panel_slw"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_styles/hover = SubResource( 7 )
+custom_styles/disabled = SubResource( 4 )
+custom_styles/normal = SubResource( 5 )
+disabled = true
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+smType = 2
+
+[node name="CRTeffect_layer" parent="." instance=ExtResource( 2 )]

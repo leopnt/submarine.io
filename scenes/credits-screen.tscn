@@ -1,0 +1,97 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://pixelPlanets/Theme.tres" type="Theme" id=1]
+[ext_resource path="res://scripts/credits-screen.gd" type="Script" id=2]
+[ext_resource path="res://postprocess-effects/CRTeffect_layer.tscn" type="PackedScene" id=3]
+
+[node name="credits-screen" type="Control"]
+modulate = Color( 0, 1, 0, 1 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource( 1 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 0.784314 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+modulate = Color( 0, 1, 0, 1 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 20.0
+margin_top = 20.0
+margin_right = -20.0
+margin_bottom = -20.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/separation = 40
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="exit-credits" type="Button" parent="VBoxContainer"]
+margin_right = 984.0
+margin_bottom = 36.0
+size_flags_horizontal = 5
+text = "EXIT TO MAIN MENU"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextEdit" type="TextEdit" parent="VBoxContainer"]
+margin_top = 76.0
+margin_right = 984.0
+margin_bottom = 560.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "# Credits
+
+### GODOT Engine
+And great thanks to the Q&A great community !
+
+### CRT shader (TV effect)
+Henrique Lacreta Alves - https://github.com/henriquelalves/SimpleGodotCRTShader
+
+### Font
+CodeMan38 - https://fonts.google.com/specimen/Press+Start+2P
+
+### Steering behavior (Used by AI and guided torpedos)
+https://kidscancode.org/godot_recipes/ai/chase/
+Daniel Shiffman - https://natureofcode.com/book/chapter-6-autonomous-agents/
+Craig Reynolds - http://www.red3d.com/cwr/steer/
+
+### Main screen planet effect (adapted)
+Deep-Fold - https://github.com/Deep-Fold/PixelPlanets
+
+### Virtual Joystick (for touchscreen devices)
+MarcoFazioRandom - https://github.com/MarcoFazioRandom/Virtual-Joystick-Godot
+
+### Sound
+csaszi          - torpedo passby close
+JarredGibb      - button click
+Jarusca         - missile launch
+Samantha Dolman - submarine engine
+tommccann       - explosion
+
+### Music
+leo-pnt - Dicap (adapted with Andréa Poupard for the movie Jane et John)"
+readonly = true
+virtual_keyboard_enabled = false
+smooth_scrolling = true
+wrap_enabled = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CRTeffect_layer" parent="." instance=ExtResource( 3 )]
+[connection signal="pressed" from="VBoxContainer/exit-credits" to="." method="_on_exitcredits_pressed"]

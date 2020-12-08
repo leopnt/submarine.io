@@ -1,0 +1,187 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://scripts/settings.gd" type="Script" id=1]
+[ext_resource path="res://postprocess-effects/CRTeffect_layer.tscn" type="PackedScene" id=2]
+[ext_resource path="res://pixelPlanets/Theme.tres" type="Theme" id=3]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 1, 1, 1, 0.117647 )
+border_width_left = 20
+border_width_top = 30
+border_width_right = 20
+border_width_bottom = 40
+border_color = Color( 1, 1, 1, 0.117647 )
+
+[node name="settings" type="Control"]
+modulate = Color( 0, 1, 0, 1 )
+self_modulate = Color( 0, 1, 0, 1 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 3 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 20.0
+margin_top = 20.0
+margin_right = -20.0
+margin_bottom = -150.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 984.0
+margin_bottom = 356.0
+size_flags_vertical = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+margin_right = 480.0
+margin_bottom = 356.0
+size_flags_horizontal = 3
+
+[node name="CheckButtonFullscreen" type="CheckButton" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_right = 480.0
+margin_bottom = 64.0
+size_flags_horizontal = 3
+text = " Fullscreen"
+
+[node name="CheckButtonTouchControls" type="CheckButton" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 72.0
+margin_right = 480.0
+margin_bottom = 136.0
+size_flags_horizontal = 3
+text = " Touch Controls"
+
+[node name="CheckButtonScaledUI" type="CheckButton" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 144.0
+margin_right = 480.0
+margin_bottom = 208.0
+size_flags_horizontal = 3
+text = " Scaled UI"
+
+[node name="CheckButtonPowerSaver" type="CheckButton" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 216.0
+margin_right = 480.0
+margin_bottom = 280.0
+size_flags_horizontal = 3
+pressed = true
+text = " Power Saver"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 288.0
+margin_right = 480.0
+margin_bottom = 356.0
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/VBoxContainer/VBoxContainer"]
+margin_right = 480.0
+margin_bottom = 16.0
+text = "Terrain height display"
+align = 1
+
+[node name="OptionButton" type="OptionButton" parent="VBoxContainer/HBoxContainer/VBoxContainer/VBoxContainer"]
+margin_top = 24.0
+margin_right = 480.0
+margin_bottom = 68.0
+text = "Isoline"
+align = 1
+items = [ "Isoline", null, false, 0, null, "Shade", null, false, 1, null ]
+selected = 0
+
+[node name="VSeparator" type="VSeparator" parent="VBoxContainer/HBoxContainer"]
+margin_left = 488.0
+margin_right = 496.0
+margin_bottom = 356.0
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+margin_left = 504.0
+margin_right = 984.0
+margin_bottom = 356.0
+size_flags_horizontal = 3
+
+[node name="ButtonControls" type="Button" parent="VBoxContainer/HBoxContainer/VBoxContainer2"]
+margin_left = 76.0
+margin_top = 35.0
+margin_right = 404.0
+margin_bottom = 121.0
+size_flags_horizontal = 6
+size_flags_vertical = 6
+custom_styles/normal = SubResource( 1 )
+text = "Modify CONTROLS >>"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer2"]
+margin_top = 164.0
+margin_right = 480.0
+margin_bottom = 220.0
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainer"]
+margin_right = 480.0
+margin_bottom = 16.0
+text = "Music"
+align = 1
+
+[node name="HSliderMusic" type="HSlider" parent="VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainer"]
+margin_top = 24.0
+margin_right = 480.0
+margin_bottom = 56.0
+min_value = -80.0
+max_value = 0.0
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer2"]
+margin_top = 228.0
+margin_right = 480.0
+margin_bottom = 284.0
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainer2"]
+margin_right = 480.0
+margin_bottom = 16.0
+text = "Effects"
+align = 1
+
+[node name="HSliderEffects" type="HSlider" parent="VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainer2"]
+margin_top = 24.0
+margin_right = 480.0
+margin_bottom = 56.0
+min_value = -80.0
+max_value = 0.0
+
+[node name="CheckButtonTVeffect" type="CheckButton" parent="VBoxContainer/HBoxContainer/VBoxContainer2"]
+margin_top = 292.0
+margin_right = 480.0
+margin_bottom = 356.0
+size_flags_horizontal = 3
+text = " TV Effect"
+
+[node name="ButtonBack" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -100.0
+margin_top = -120.0
+margin_right = 100.0
+margin_bottom = -40.0
+size_flags_horizontal = 6
+text = "Back"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CRTeffect_layer" parent="." instance=ExtResource( 2 )]
+[connection signal="toggled" from="VBoxContainer/HBoxContainer/VBoxContainer/CheckButtonFullscreen" to="." method="_on_CheckButtonFullscreen_toggled"]
+[connection signal="toggled" from="VBoxContainer/HBoxContainer/VBoxContainer/CheckButtonTouchControls" to="." method="_on_CheckButtonTouchControls_toggled"]
+[connection signal="toggled" from="VBoxContainer/HBoxContainer/VBoxContainer/CheckButtonScaledUI" to="." method="_on_CheckButtoScaledUI_toggled"]
+[connection signal="toggled" from="VBoxContainer/HBoxContainer/VBoxContainer/CheckButtonPowerSaver" to="." method="_on_CheckButtonPowerSaver_toggled"]
+[connection signal="item_selected" from="VBoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/OptionButton" to="." method="_on_OptionButton_item_selected"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/VBoxContainer2/ButtonControls" to="." method="_on_ButtonControls_pressed"]
+[connection signal="value_changed" from="VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainer/HSliderMusic" to="." method="_on_HSliderMusic_value_changed"]
+[connection signal="value_changed" from="VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainer2/HSliderEffects" to="." method="_on_HSliderEffects_value_changed"]
+[connection signal="toggled" from="VBoxContainer/HBoxContainer/VBoxContainer2/CheckButtonTVeffect" to="." method="_on_CheckButtonTVeffect_toggled"]
+[connection signal="pressed" from="ButtonBack" to="." method="_on_ButtonBack_pressed"]
