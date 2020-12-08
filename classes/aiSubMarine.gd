@@ -272,7 +272,7 @@ func getLaserInterPred(sm:SubMarine)->Vector2:
 	
 	var lt = Laser.initialTimeToEnable
 	
-	var selfPos:Vector2 = position + t * linear_velocity
+	var selfPos:Vector2 = position + lt * linear_velocity
 	
 	var intersectinPoint = smPos + lt * smVel
 	var predictedColPos = (intersectinPoint - selfPos) / lt
