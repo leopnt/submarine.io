@@ -17,7 +17,11 @@ func _ready():
 	checkBoxFullscreen.grab_focus()
 	
 	checkButtonTouchControls.pressed = Global.touchControls
-	checkButtonTouchControls.disabled = !OS.has_touchscreen_ui_hint()
+	
+	#"Android", "BlackBerry 10", "Flash", "Haiku", "iOS", "HTML5", "OSX", "Server", "Windows", "WinRT", "X11"
+	var platform = OS.get_name()
+	if platform == "Android" || platform == "BlackBerry 10" || platform == "Flash" || platform == "iOS" || platform == "HTML5":
+		checkButtonTouchControls.disabled = true
 	
 	checkBoxScaledUI.pressed = Global.scaledUI
 	if Global.powerSaver:
