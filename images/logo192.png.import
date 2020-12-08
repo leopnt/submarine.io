@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/pure-black-background.png-24a3560b5a66d94a5a5508bc179e213d.stex"
+path="res://.import/logo192.png-c6d0752705e97d8fc181ecf7ba46faea.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://pure-black-background.png"
-dest_files=[ "res://.import/pure-black-background.png-24a3560b5a66d94a5a5508bc179e213d.stex" ]
+source_file="res://images/logo192.png"
+dest_files=[ "res://.import/logo192.png-c6d0752705e97d8fc181ecf7ba46faea.stex" ]
 
 [params]
 

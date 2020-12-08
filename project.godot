@@ -118,11 +118,11 @@ _global_script_class_icons={
 
 config/name="submarine.io"
 run/main_scene="res://pixelPlanets/GUI.tscn"
-boot_splash/image="res://pure-black-background.png"
+boot_splash/image="res://images/pure-black-background.png"
 boot_splash/use_filter=false
 boot_splash/bg_color=Color( 0, 0, 0, 1 )
-config/icon="res://logo512.png"
-config/windows_native_icon="res://logo.ico"
+config/icon="res://images/logo512.png"
+config/windows_native_icon="res://images/logo.ico"
 config/quit_on_go_back=false
 
 [audio]
