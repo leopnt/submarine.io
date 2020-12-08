@@ -11,8 +11,6 @@ onready var checkButtonTouchControls:CheckButton = get_node("VBoxContainer/HBoxC
 
 
 func _ready():
-	if OS.has_touchscreen_ui_hint():
-		checkBoxFullscreen.disabled = true
 	checkBoxFullscreen.pressed = OS.window_fullscreen
 	checkBoxFullscreen.grab_focus()
 	
@@ -22,6 +20,8 @@ func _ready():
 	var platform = OS.get_name()
 	if platform == "Android" || platform == "BlackBerry 10" || platform == "Flash" || platform == "iOS" || platform == "HTML5":
 		checkButtonTouchControls.disabled = true
+		checkBoxFullscreen.disabled = true
+		
 	
 	checkBoxScaledUI.pressed = Global.scaledUI
 	if Global.powerSaver:
