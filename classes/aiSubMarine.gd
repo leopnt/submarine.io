@@ -20,6 +20,11 @@ var avoidShape:CircleShape2D
 
 var turnAroundDir:float # so that each ai in the game will turn (decide) clockwise or anticlockwise randomly
 
+var noise:OpenSimplexNoise # used for random walk
+var t:float = 0.0 # for random walk
+const dt:float = 0.1 # t increment
+
+
 func _init():
 	autoShootTimer = Timer.new()
 	autoShootTimer.wait_time = rand_range(1.0, coolDownTime + 5.0) # seconds
@@ -47,6 +52,15 @@ func _init():
 		turnAroundDir = 1
 	else:
 		turnAroundDir = -1
+
+	
+	noise = OpenSimplexNoise.new()
+	
+	noise.seed = randi()
+	noise.octaves = 4
+	noise.period = 20.0
+	noise.persistence = 0.8
+	
 
 func _ready():
 	autoShootTimer.connect("timeout", self, "on_shootingTimer_timeout")
@@ -89,7 +103,7 @@ func _process(delta):
 	steer = steer.clamped(max_force)
 	
 	fleeWall() 
-	
+
 	# apply movements
 	if linear_velocity.length() < max_speed:
 		var force = (dodge_force + steer).clamped(max_force)
@@ -98,6 +112,7 @@ func _process(delta):
 	dodge_force = Vector2.ZERO #reset force
 	steer = Vector2.ZERO
 
+	
 	update()
 
 func applyGameLogic()->void:
@@ -215,6 +230,12 @@ func on_speAutoShootTimer_timeout()->void:
 		fireSpe()
 		speAutoShootTimer.wait_time = rand_range(1.0, specialCoolDownTime + 5.0)
 
+func randomWalk()->void:
+	steer.x = max_force * noise.get_noise_1d(t)
+	steer.y = max_force * noise.get_noise_1d(t + 100.0)
+	steer = max_force * steer.normalized()
+	t += dt
+
 func seek(target:Node2D)->void:
 	var desiredVel = target.position - position
 	steer += desiredVel - linear_velocity
@@ -233,12 +254,14 @@ func flee(ennemy:Node2D)->void:
 	var desiredVel = position - ennemy.position
 	if desiredVel.length() < 250:
 		steer += desiredVel - linear_velocity
+	else:
+		randomWalk()
 
 
 func fleeMine(mine:Mine)->void:
 	var desiredVel = position - mine.position
-	if desiredVel.length() < 1.2 * Mine.collShapeRadius:
-		steer = desiredVel - linear_velocity
+	if desiredVel.length() < 1.25 * Mine.collShapeRadius:
+		steer = max_force * (desiredVel - linear_velocity).normalized()
 
 func getLaserInterPred(sm:SubMarine)->Vector2:
 	# returs intersection prediction position
