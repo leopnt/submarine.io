@@ -4,8 +4,6 @@
 
 ### ai
  - ai should not shoot directly on teammates
- - ai flag don't move priority is higher than dodging mines
- - implement ai idle wonder movement to not appear afk
 
 ### general
  - /

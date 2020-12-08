@@ -143,11 +143,13 @@ func apply_flag_ai_logic(aiEnnemyTeam:String)->void:
 			# var distToFlag = (ai.position - flag.position).length()
 			if !flag.has_owner():
 				seek(flag)
-			elif flag.has_owner():
+			elif flag.has_owner() && flag.flagOwner.is_in_group(aiEnnemyTeam):
 				threat = flag.flagOwner
 				seekAndArrive(threat)
 			else:
-				seekAndArrive(threat)
+				# team already possesses all flags
+				var ally = flag.flagOwner
+				seekAndArrive(ally)
 		else:
 			flee(threat)
 	else:
