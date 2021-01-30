@@ -1,19 +1,4 @@
-# Submarine.io
+# <img src="https://github.com/kahagino/Submarine.io/blob/main/images/logo192.png" width="64"> Submarine.io
 
-## TODO
-
-### ai
- - ai should not shoot directly on teammates
-
-### general
- - /
-
-### game mode
- - battle royal
-
-### graphics
- - It's possible to shoot with touchscreen without touch controls visible
-
-### bugs
- - respawn can occur on or very close to an ennemy
+[Play the game](https://kahagino.itch.io/submarineio)
 
